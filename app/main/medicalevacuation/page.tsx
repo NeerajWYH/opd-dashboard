@@ -26,11 +26,12 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  SelectLabel,
 } from "@/components/ui/select"
 import { httpGet, httpPost } from "@/lib/https"
 import { triggerToast } from "@/lib/utils"
 import { useLoader } from "@/hooks/use-loader"
-import { bloodTestSchema } from "@/lib/post-body-schema"
+import { medicalEvacuationSchema } from "@/lib/post-body-schema"
 import {
   Accordion,
   AccordionContent,
@@ -38,7 +39,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 
-const formSchema = bloodTestSchema
+const formSchema = medicalEvacuationSchema
 
 const items = [
   { label: "Male", value: "male" },
@@ -46,7 +47,91 @@ const items = [
   { label: "Other", value: "other" },
 ]
 
-export default function BloodTestPage() {
+const emergencytypes = [
+  {
+    category: "Medical Emergencies",
+    types: [
+      {
+        label: "Chest pain / suspected heart attack",
+        value: "CHEST_PAIN_HEART_ATTACK",
+      },
+      {
+        label: "Breathing difficulty / shortness of breath",
+        value: "BREATHING_DIFFICULTY",
+      },
+      { label: "Unconscious / not responding", value: "UNCONSCIOUS" },
+      {
+        label: "Stroke symptoms (slurred speech, weakness on one side)",
+        value: "STROKE_SYMPTOMS",
+      },
+      { label: "Seizure / fits", value: "SEIZURE" },
+      { label: "Severe allergic reaction", value: "ALLERGIC_REACTION" },
+      { label: "High fever with complications", value: "HIGH_FEVER" },
+      { label: "Severe pain (unknown cause)", value: "SEVERE_PAIN" },
+    ],
+  },
+  {
+    category: "Trauma / Injury Emergencies",
+    types: [
+      { label: "Road accident", value: "ROAD_ACCIDENT" },
+      { label: "Fall from height", value: "FALL_FROM_HEIGHT" },
+      { label: "Head injury", value: "HEAD_INJURY" },
+      { label: "Fracture / broken bone", value: "FRACTURE" },
+      { label: "Heavy bleeding", value: "HEAVY_BLEEDING" },
+      { label: "Burn injury (fire, chemical, electric)", value: "BURN_INJURY" },
+    ],
+  },
+  {
+    category: "Special Condition Emergencies",
+    types: [
+      { label: "Pregnancy-related emergency", value: "PREGNANCY_EMERGENCY" },
+      { label: "Child / infant emergency", value: "CHILD_EMERGENCY" },
+      { label: "Elderly critical condition", value: "ELDERLY_CRITICAL" },
+    ],
+  },
+  {
+    category: "Critical Health Conditions",
+    types: [
+      {
+        label: "Oxygen required / breathing support needed",
+        value: "OXYGEN_REQUIRED",
+      },
+      { label: "ICU transfer required", value: "ICU_TRANSFER" },
+      { label: "Ventilator support needed", value: "VENTILATOR_REQUIRED" },
+      {
+        label: "Organ-related emergency (kidney, liver, etc.)",
+        value: "ORGAN_EMERGENCY",
+      },
+    ],
+  },
+  {
+    category: "Environmental / Situational Emergencies",
+    types: [
+      { label: "Drowning / near drowning", value: "DROWNING" },
+      { label: "Electric shock", value: "ELECTRIC_SHOCK" },
+      { label: "Poisoning / overdose", value: "POISONING" },
+      { label: "Snake bite / animal bite", value: "ANIMAL_BITE" },
+      { label: "Heat stroke / severe dehydration", value: "HEAT_STROKE" },
+    ],
+  },
+  {
+    category: "Transport-Specific Situations",
+    types: [
+      { label: "Inter-hospital transfer", value: "INTER_HOSPITAL_TRANSFER" },
+      { label: "Remote area evacuation", value: "REMOTE_EVACUATION" },
+      { label: "Need for air ambulance", value: "AIR_AMBULANCE" },
+      { label: "Not sure (need guidance)", value: "NOT_SURE" },
+    ],
+  },
+  {
+    category: "Other",
+    types: [{ label: "Other", value: "OTHER" }],
+  },
+]
+
+const modEmergencytypes = emergencytypes.map((item) => item.types).flat()
+
+export default function MultiSpecialistPage() {
   const { toggleLoader } = useLoader()
   const form = useForm({
     defaultValues: {
@@ -55,7 +140,8 @@ export default function BloodTestPage() {
       gender: "",
       mobile: "",
       address: "",
-      notes: "",
+      explainemergency: "",
+      emergencytype: "",
     },
     validators: {
       onSubmit: formSchema,
@@ -67,7 +153,7 @@ export default function BloodTestPage() {
         value.dob = new Date(
           new Date(value.dob).getTime() + 5.5 * 60 * 60 * 1000
         )
-        const res = await httpPost("/api/bloodtest/add", value)
+        const res = await httpPost("/api/medicalevacuation/add", value)
         if (res.ok) {
           triggerToast("success", "Data submitted successfully")
           form.reset()
@@ -94,7 +180,7 @@ export default function BloodTestPage() {
 
   return (
     <div className="w-full">
-      <h2 className="text-2xl font-semibold">Add Blood Test</h2>
+      <h2 className="text-2xl font-semibold">Add Multi Specialist</h2>
 
       <Card className="mt-5 w-full max-w-[800px] py-1">
         <CardContent className="">
@@ -106,13 +192,13 @@ export default function BloodTestPage() {
                   <div>
                     <h3 className="mb-1 font-semibold">Endpoint</h3>
                     <code className="rounded bg-[#aaaaaa] px-2 py-1 text-sm">
-                      POST /api/bloodtest/add
+                      POST /api/medicalevacuation/add
                     </code>
                   </div>
                   <div>
                     <h3 className="font-semibold">Request Body Schema</h3>
                     <pre className="overflow-x-auto rounded bg-[#aaaaaa] p-4 text-sm">
-                      {formatSchema(bloodTestSchema.shape)}
+                      {formatSchema(medicalEvacuationSchema.shape)}
                     </pre>
                   </div>
                 </div>
@@ -285,6 +371,57 @@ export default function BloodTestPage() {
                 }}
               />
               <form.Field
+                name="emergencytype"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Field
+                      data-invalid={isInvalid}
+                      className="w-[calc(50%-0.5rem)] gap-0.5"
+                    >
+                      <FieldLabel htmlFor={field.name}>
+                        Emergency Type
+                      </FieldLabel>
+                      <Select
+                        items={modEmergencytypes}
+                        name={field.name}
+                        value={field.state.value}
+                        onValueChange={(val) => field.handleChange(val ?? "")}
+                      >
+                        <SelectTrigger
+                          className="w-[180px] py-4.5"
+                          aria-invalid={isInvalid}
+                        >
+                          <SelectValue placeholder="Select Emergency Type" />
+                        </SelectTrigger>
+                        <SelectContent alignItemWithTrigger={false}>
+                          {emergencytypes.map((item) => (
+                            <SelectGroup key={item.category}>
+                              <SelectLabel className="rounded-sm bg-[#ccc] font-semibold text-black">
+                                {item.category}
+                              </SelectLabel>
+                              {item.types.map((item) => (
+                                <SelectItem key={item.value} value={item.value}>
+                                  {item.label}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {isInvalid && (
+                        <FieldError
+                          errors={field.state.meta.errors}
+                          className="text-xs"
+                        />
+                      )}
+                    </Field>
+                  )
+                }}
+              />
+              <div className="w-[calc(50%-0.5rem)]"></div>
+              <form.Field
                 name="address"
                 children={(field) => {
                   const isInvalid =
@@ -329,7 +466,7 @@ export default function BloodTestPage() {
                 }}
               />
               <form.Field
-                name="notes"
+                name="explainemergency"
                 children={(field) => {
                   const isInvalid =
                     field.state.meta.isTouched && !field.state.meta.isValid
@@ -338,7 +475,9 @@ export default function BloodTestPage() {
                       data-invalid={isInvalid}
                       className="w-[calc(50%-0.5rem)] gap-0.5"
                     >
-                      <FieldLabel htmlFor={field.name}>Notes</FieldLabel>
+                      <FieldLabel htmlFor={field.name}>
+                        Explain Emergency
+                      </FieldLabel>
                       <InputGroup>
                         <InputGroupTextarea
                           id={field.name}
@@ -346,7 +485,7 @@ export default function BloodTestPage() {
                           value={field.state.value}
                           onBlur={field.handleBlur}
                           onChange={(e) => field.handleChange(e.target.value)}
-                          placeholder="Enter Your Notes"
+                          placeholder="Explain emergency"
                           rows={6}
                           className="min-h-24 resize-none"
                           aria-invalid={isInvalid}

@@ -30,7 +30,7 @@ import {
 import { httpGet, httpPost } from "@/lib/https"
 import { triggerToast } from "@/lib/utils"
 import { useLoader } from "@/hooks/use-loader"
-import { bloodTestSchema } from "@/lib/post-body-schema"
+import { multiSpecialistSchema } from "@/lib/post-body-schema"
 import {
   Accordion,
   AccordionContent,
@@ -38,7 +38,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 
-const formSchema = bloodTestSchema
+const formSchema = multiSpecialistSchema
 
 const items = [
   { label: "Male", value: "male" },
@@ -46,7 +46,34 @@ const items = [
   { label: "Other", value: "other" },
 ]
 
-export default function BloodTestPage() {
+const specialities = [
+  { label: "Anesthesiology", value: "Anesthesiology" },
+  { label: "Cardiology", value: "Cardiology" },
+  { label: "Dermatology", value: "Dermatology" },
+  { label: "Emergency Medicine", value: "EmergencyMedicine" },
+  { label: "Endocrinology", value: "Endocrinology" },
+  { label: "Family Medicine", value: "FamilyMedicine" },
+  { label: "Gastroenterology", value: "Gastroenterology" },
+  { label: "General Surgery", value: "GeneralSurgery" },
+  { label: "Geriatrics", value: "Geriatrics" },
+  { label: "Internal Medicine", value: "InternalMedicine" },
+  { label: "Nephrology", value: "Nephrology" },
+  { label: "Neurology", value: "Neurology" },
+  { label: "Obstetrics & Gynecology", value: "OBGYN" },
+  { label: "Oncology", value: "Oncology" },
+  { label: "Ophthalmology", value: "Ophthalmology" },
+  { label: "Orthopedic Surgery", value: "OrthopedicSurgery" },
+  { label: "Otolaryngology (ENT)", value: "ENT" },
+  { label: "Pediatrics", value: "Pediatrics" },
+  { label: "Psychiatry", value: "Psychiatry" },
+  { label: "Pulmonology", value: "Pulmonology" },
+  { label: "Radiology", value: "Radiology" },
+  { label: "Rheumatology", value: "Rheumatology" },
+  { label: "Urology", value: "Urology" },
+  { label: "Other", value: "Other" },
+]
+
+export default function MultiSpecialistPage() {
   const { toggleLoader } = useLoader()
   const form = useForm({
     defaultValues: {
@@ -55,7 +82,8 @@ export default function BloodTestPage() {
       gender: "",
       mobile: "",
       address: "",
-      notes: "",
+      currentIllness: "",
+      specialist: "",
     },
     validators: {
       onSubmit: formSchema,
@@ -67,7 +95,7 @@ export default function BloodTestPage() {
         value.dob = new Date(
           new Date(value.dob).getTime() + 5.5 * 60 * 60 * 1000
         )
-        const res = await httpPost("/api/bloodtest/add", value)
+        const res = await httpPost("/api/multispecialist/add", value)
         if (res.ok) {
           triggerToast("success", "Data submitted successfully")
           form.reset()
@@ -94,7 +122,7 @@ export default function BloodTestPage() {
 
   return (
     <div className="w-full">
-      <h2 className="text-2xl font-semibold">Add Blood Test</h2>
+      <h2 className="text-2xl font-semibold">Add Multi Specialist</h2>
 
       <Card className="mt-5 w-full max-w-[800px] py-1">
         <CardContent className="">
@@ -106,13 +134,13 @@ export default function BloodTestPage() {
                   <div>
                     <h3 className="mb-1 font-semibold">Endpoint</h3>
                     <code className="rounded bg-[#aaaaaa] px-2 py-1 text-sm">
-                      POST /api/bloodtest/add
+                      POST /api/multispecialist/add
                     </code>
                   </div>
                   <div>
                     <h3 className="font-semibold">Request Body Schema</h3>
                     <pre className="overflow-x-auto rounded bg-[#aaaaaa] p-4 text-sm">
-                      {formatSchema(bloodTestSchema.shape)}
+                      {formatSchema(multiSpecialistSchema.shape)}
                     </pre>
                   </div>
                 </div>
@@ -285,6 +313,50 @@ export default function BloodTestPage() {
                 }}
               />
               <form.Field
+                name="specialist"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Field
+                      data-invalid={isInvalid}
+                      className="w-[calc(50%-0.5rem)] gap-0.5"
+                    >
+                      <FieldLabel htmlFor={field.name}>Specialist</FieldLabel>
+                      <Select
+                        items={specialities}
+                        name={field.name}
+                        value={field.state.value}
+                        onValueChange={(val) => field.handleChange(val ?? "")}
+                      >
+                        <SelectTrigger
+                          className="w-[180px] py-4.5"
+                          aria-invalid={isInvalid}
+                        >
+                          <SelectValue placeholder="Select Specialist" />
+                        </SelectTrigger>
+                        <SelectContent alignItemWithTrigger={false}>
+                          <SelectGroup>
+                            {specialities.map((item) => (
+                              <SelectItem key={item.value} value={item.value}>
+                                {item.label}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                      {isInvalid && (
+                        <FieldError
+                          errors={field.state.meta.errors}
+                          className="text-xs"
+                        />
+                      )}
+                    </Field>
+                  )
+                }}
+              />
+              <div className="w-[calc(50%-0.5rem)]"></div>
+              <form.Field
                 name="address"
                 children={(field) => {
                   const isInvalid =
@@ -329,7 +401,7 @@ export default function BloodTestPage() {
                 }}
               />
               <form.Field
-                name="notes"
+                name="currentIllness"
                 children={(field) => {
                   const isInvalid =
                     field.state.meta.isTouched && !field.state.meta.isValid
@@ -338,7 +410,9 @@ export default function BloodTestPage() {
                       data-invalid={isInvalid}
                       className="w-[calc(50%-0.5rem)] gap-0.5"
                     >
-                      <FieldLabel htmlFor={field.name}>Notes</FieldLabel>
+                      <FieldLabel htmlFor={field.name}>
+                        Current Illness
+                      </FieldLabel>
                       <InputGroup>
                         <InputGroupTextarea
                           id={field.name}
@@ -346,7 +420,7 @@ export default function BloodTestPage() {
                           value={field.state.value}
                           onBlur={field.handleBlur}
                           onChange={(e) => field.handleChange(e.target.value)}
-                          placeholder="Enter Your Notes"
+                          placeholder="Explain current illness"
                           rows={6}
                           className="min-h-24 resize-none"
                           aria-invalid={isInvalid}

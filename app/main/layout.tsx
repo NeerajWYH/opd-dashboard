@@ -20,7 +20,14 @@ import {
   SidebarRail,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { LayoutDashboard, Settings, Users, TestTube2 } from "lucide-react"
+import {
+  LayoutDashboard,
+  Settings,
+  Users,
+  TestTube2,
+  StethoscopeIcon,
+  Ambulance,
+} from "lucide-react"
 import { usePathname } from "next/navigation"
 
 const navMain = [
@@ -28,6 +35,21 @@ const navMain = [
     title: "Blood Test",
     url: "/main/bloodtest",
     icon: TestTube2,
+  },
+  {
+    title: "Doctor Consultant",
+    url: "/main/doctorconsultant",
+    icon: StethoscopeIcon,
+  },
+  {
+    title: "Multi Specialist",
+    url: "/main/multispecialist",
+    icon: StethoscopeIcon,
+  },
+  {
+    title: "Medical Evacuation",
+    url: "/main/medicalevacuation",
+    icon: Ambulance,
   },
   {
     title: "Settings",

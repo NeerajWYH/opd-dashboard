@@ -30,7 +30,7 @@ import {
 import { httpGet, httpPost } from "@/lib/https"
 import { triggerToast } from "@/lib/utils"
 import { useLoader } from "@/hooks/use-loader"
-import { bloodTestSchema } from "@/lib/post-body-schema"
+import { doctorConsultantSchema } from "@/lib/post-body-schema"
 import {
   Accordion,
   AccordionContent,
@@ -38,7 +38,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 
-const formSchema = bloodTestSchema
+const formSchema = doctorConsultantSchema
 
 const items = [
   { label: "Male", value: "male" },
@@ -46,7 +46,7 @@ const items = [
   { label: "Other", value: "other" },
 ]
 
-export default function BloodTestPage() {
+export default function DoctorConsultantPage() {
   const { toggleLoader } = useLoader()
   const form = useForm({
     defaultValues: {
@@ -55,7 +55,7 @@ export default function BloodTestPage() {
       gender: "",
       mobile: "",
       address: "",
-      notes: "",
+      currentIllness: "",
     },
     validators: {
       onSubmit: formSchema,
@@ -67,7 +67,7 @@ export default function BloodTestPage() {
         value.dob = new Date(
           new Date(value.dob).getTime() + 5.5 * 60 * 60 * 1000
         )
-        const res = await httpPost("/api/bloodtest/add", value)
+        const res = await httpPost("/api/doctorconsultant/add", value)
         if (res.ok) {
           triggerToast("success", "Data submitted successfully")
           form.reset()
@@ -94,7 +94,7 @@ export default function BloodTestPage() {
 
   return (
     <div className="w-full">
-      <h2 className="text-2xl font-semibold">Add Blood Test</h2>
+      <h2 className="text-2xl font-semibold">Add Doctor Consultant</h2>
 
       <Card className="mt-5 w-full max-w-[800px] py-1">
         <CardContent className="">
@@ -106,13 +106,13 @@ export default function BloodTestPage() {
                   <div>
                     <h3 className="mb-1 font-semibold">Endpoint</h3>
                     <code className="rounded bg-[#aaaaaa] px-2 py-1 text-sm">
-                      POST /api/bloodtest/add
+                      POST /api/doctorconsultant/add
                     </code>
                   </div>
                   <div>
                     <h3 className="font-semibold">Request Body Schema</h3>
                     <pre className="overflow-x-auto rounded bg-[#aaaaaa] p-4 text-sm">
-                      {formatSchema(bloodTestSchema.shape)}
+                      {formatSchema(doctorConsultantSchema.shape)}
                     </pre>
                   </div>
                 </div>
@@ -329,7 +329,7 @@ export default function BloodTestPage() {
                 }}
               />
               <form.Field
-                name="notes"
+                name="currentIllness"
                 children={(field) => {
                   const isInvalid =
                     field.state.meta.isTouched && !field.state.meta.isValid
@@ -338,7 +338,9 @@ export default function BloodTestPage() {
                       data-invalid={isInvalid}
                       className="w-[calc(50%-0.5rem)] gap-0.5"
                     >
-                      <FieldLabel htmlFor={field.name}>Notes</FieldLabel>
+                      <FieldLabel htmlFor={field.name}>
+                        Current Illness
+                      </FieldLabel>
                       <InputGroup>
                         <InputGroupTextarea
                           id={field.name}
@@ -346,7 +348,7 @@ export default function BloodTestPage() {
                           value={field.state.value}
                           onBlur={field.handleBlur}
                           onChange={(e) => field.handleChange(e.target.value)}
-                          placeholder="Enter Your Notes"
+                          placeholder="Explain current illness"
                           rows={6}
                           className="min-h-24 resize-none"
                           aria-invalid={isInvalid}

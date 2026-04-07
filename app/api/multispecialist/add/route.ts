@@ -2,18 +2,11 @@ import { NextResponse } from "next/server"
 import { db } from "@/lib/firebase"
 import { collection, addDoc } from "firebase/firestore"
 import { z } from "zod"
-import { bloodTestSchema } from "@/lib/post-body-schema"
+import { multiSpecialistSchema } from "@/lib/post-body-schema"
 
-const postBodySchema = bloodTestSchema.extend({
+const postBodySchema = multiSpecialistSchema.extend({
   dob: z.string(),
 })
-
-export async function GET() {
-  return NextResponse.json({
-    message: "Hello from API",
-    timestamp: new Date().toISOString(),
-  })
-}
 
 export async function POST(request: Request) {
   try {
@@ -30,7 +23,10 @@ export async function POST(request: Request) {
       }
       throw zodError
     }
-    const docRef = await addDoc(collection(db, "bloodtests"), validatedData)
+    const docRef = await addDoc(
+      collection(db, "multispecialist"),
+      validatedData
+    )
     if (docRef.id) {
       return NextResponse.json({
         received: docRef.id,
