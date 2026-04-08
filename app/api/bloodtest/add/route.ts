@@ -3,12 +3,19 @@ import { db } from "@/lib/firebase"
 import { collection, addDoc } from "firebase/firestore"
 import { z } from "zod"
 import { bloodTestSchema } from "@/lib/post-body-schema"
+import { rateLimitMiddleware } from "@/lib/rate-limit"
 
 const postBodySchema = bloodTestSchema.extend({
   dob: z.string(),
+  createdAt: z.string(),
 })
 
 export async function POST(request: Request) {
+  const rateLimitResponse = await rateLimitMiddleware(request)
+  if (rateLimitResponse) {
+    return rateLimitResponse
+  }
+
   try {
     const body = await request.json()
     let validatedData: z.infer<typeof postBodySchema>
@@ -35,7 +42,10 @@ export async function POST(request: Request) {
       { status: 500 }
     )
   } catch (error) {
-    console.log(error)
-    return NextResponse.json({ error: error }, { status: 500 })
+    console.error(error)
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    )
   }
 }

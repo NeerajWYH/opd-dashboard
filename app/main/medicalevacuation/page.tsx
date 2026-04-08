@@ -147,13 +147,17 @@ export default function MultiSpecialistPage() {
       onSubmit: formSchema,
     },
     onSubmit: async ({ value }) => {
-      console.log(value)
       try {
         toggleLoader(true)
-        value.dob = new Date(
-          new Date(value.dob).getTime() + 5.5 * 60 * 60 * 1000
-        )
-        const res = await httpPost("/api/medicalevacuation/add", value)
+        const res = await httpPost("/api/medicalevacuation/add", {
+          ...value,
+          dob: new Date(
+            new Date(value.dob).getTime() + 5.5 * 60 * 60 * 1000
+          ).toISOString(),
+          createdAt: new Date(
+            new Date().getTime() + 5.5 * 60 * 60 * 1000
+          ).toISOString(),
+        })
         if (res.ok) {
           triggerToast("success", "Data submitted successfully")
           form.reset()

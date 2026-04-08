@@ -3,12 +3,19 @@ import { db } from "@/lib/firebase"
 import { collection, addDoc } from "firebase/firestore"
 import { z } from "zod"
 import { multiSpecialistSchema } from "@/lib/post-body-schema"
+import { rateLimitMiddleware } from "@/lib/rate-limit"
 
 const postBodySchema = multiSpecialistSchema.extend({
   dob: z.string(),
+  createdAt: z.string(),
 })
 
 export async function POST(request: Request) {
+  const rateLimitResponse = await rateLimitMiddleware(request)
+  if (rateLimitResponse) {
+    return rateLimitResponse
+  }
+
   try {
     const body = await request.json()
     let validatedData: z.infer<typeof postBodySchema>
@@ -24,7 +31,7 @@ export async function POST(request: Request) {
       throw zodError
     }
     const docRef = await addDoc(
-      collection(db, "multispecialist"),
+      collection(db, "multispecialists"),
       validatedData
     )
     if (docRef.id) {
@@ -37,8 +44,8 @@ export async function POST(request: Request) {
       { error: "Failed to add document" },
       { status: 500 }
     )
-  } catch (error) {
+  } catch (error: any) {
     console.log(error)
-    return NextResponse.json({ error: error }, { status: 500 })
+    return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }

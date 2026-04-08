@@ -27,6 +27,7 @@ import {
   TestTube2,
   StethoscopeIcon,
   Ambulance,
+  Percent,
 } from "lucide-react"
 import { usePathname } from "next/navigation"
 
@@ -52,14 +53,9 @@ const navMain = [
     icon: Ambulance,
   },
   {
-    title: "Settings",
-    url: "/main/settings",
-    icon: Settings,
-  },
-  {
-    title: "API Test",
-    url: "/main/api-test",
-    icon: Settings,
+    title: "Medicine Discounts",
+    url: "/main/medicinediscounts",
+    icon: Percent,
   },
 ]
 
