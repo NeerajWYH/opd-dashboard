@@ -31,7 +31,10 @@ import {
 import { httpGet, httpPost } from "@/lib/https"
 import { triggerToast } from "@/lib/utils"
 import { useLoader } from "@/hooks/use-loader"
-import { medicalEvacuationSchema } from "@/lib/post-body-schema"
+import {
+  medicalEvacuationSchema,
+  exposeFormattedStringifyAPISchema,
+} from "@/lib/post-body-schema"
 import {
   Accordion,
   AccordionContent,
@@ -173,14 +176,10 @@ export default function MultiSpecialistPage() {
     },
   })
 
-  const formatSchema = useCallback((schemaShape: any) => {
-    const refinedSchema = JSON.parse(JSON.stringify(schemaShape, null, 2))
-    const updatedSchema: Record<string, string> = {}
-    Object.keys(refinedSchema).forEach((key) => {
-      updatedSchema[key] = refinedSchema[key].type
-    })
-    return JSON.stringify(updatedSchema, null, 2)
-  }, [])
+  const formatSchema = useCallback(
+    () => exposeFormattedStringifyAPISchema(medicalEvacuationSchema.shape),
+    []
+  )
 
   return (
     <div className="w-full">
@@ -202,7 +201,7 @@ export default function MultiSpecialistPage() {
                   <div>
                     <h3 className="font-semibold">Request Body Schema</h3>
                     <pre className="overflow-x-auto rounded bg-[#aaaaaa] p-4 text-sm">
-                      {formatSchema(medicalEvacuationSchema.shape)}
+                      {formatSchema()}
                     </pre>
                   </div>
                 </div>

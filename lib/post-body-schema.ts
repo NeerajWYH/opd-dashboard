@@ -75,3 +75,16 @@ export const medicalEvacuationSchema = z.object({
     .string()
     .max(500, "Explain emergency must be at most 500 characters."),
 })
+
+export function exposeFormattedStringifyAPISchema(schemaShape: any) {
+  const refinedSchema = JSON.parse(JSON.stringify(schemaShape, null, 2))
+  const updatedSchema: Record<string, string> = {}
+  Object.keys(refinedSchema).forEach((key) => {
+    updatedSchema[key] = refinedSchema[key].type
+  })
+  updatedSchema.createdAt = "date string"
+  if (updatedSchema.dob) {
+    updatedSchema.dob = "date string"
+  }
+  return JSON.stringify(updatedSchema, null, 2)
+}
