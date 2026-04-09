@@ -33,6 +33,7 @@ import { useLoader } from "@/hooks/use-loader"
 import {
   bloodTestSchema,
   exposeFormattedStringifyAPISchema,
+  exposeFormattedStringifyAPIResponseSchema,
 } from "@/lib/post-body-schema"
 import {
   Accordion,
@@ -91,14 +92,9 @@ export default function BloodTestPage() {
     },
   })
 
-  const formatSchema = useCallback(
-    () => exposeFormattedStringifyAPISchema(bloodTestSchema.shape),
-    []
-  )
-
   return (
     <div className="w-full">
-      <h2 className="text-2xl font-semibold">Add Blood Test</h2>
+      <h2 className="text-2xl font-semibold">Book Blood Test</h2>
 
       <Card className="mt-5 w-full max-w-[800px] py-1">
         <CardContent className="">
@@ -116,7 +112,13 @@ export default function BloodTestPage() {
                   <div>
                     <h3 className="font-semibold">Request Body Schema</h3>
                     <pre className="overflow-x-auto rounded bg-[#aaaaaa] p-4 text-sm">
-                      {formatSchema()}
+                      {exposeFormattedStringifyAPISchema(bloodTestSchema.shape)}
+                    </pre>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">Response Body Schema</h3>
+                    <pre className="overflow-x-auto rounded bg-[#aaaaaa] p-4 text-sm">
+                      {exposeFormattedStringifyAPIResponseSchema()}
                     </pre>
                   </div>
                 </div>
@@ -306,7 +308,7 @@ export default function BloodTestPage() {
                           value={field.state.value}
                           onBlur={field.handleBlur}
                           onChange={(e) => field.handleChange(e.target.value)}
-                          placeholder="Enter Your Address"
+                          placeholder="Enter address"
                           rows={6}
                           className="min-h-24 resize-none"
                           aria-invalid={isInvalid}
@@ -350,7 +352,7 @@ export default function BloodTestPage() {
                           value={field.state.value}
                           onBlur={field.handleBlur}
                           onChange={(e) => field.handleChange(e.target.value)}
-                          placeholder="Enter Your Notes"
+                          placeholder="Enter notes"
                           rows={6}
                           className="min-h-24 resize-none"
                           aria-invalid={isInvalid}

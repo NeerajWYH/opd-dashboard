@@ -4,6 +4,7 @@ import "./globals.css"
 import { cn } from "@/lib/utils"
 import { Toaster } from "@/components/ui/sonner"
 import { LoaderProvider } from "@/hooks/use-loader"
+import { TooltipProvider } from "@/components/ui/tooltip"
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" })
 
@@ -30,8 +31,10 @@ export default function RootLayout({
     >
       <body>
         <LoaderProvider>
-          <Toaster />
-          {children}
+          <TooltipProvider>
+            <Toaster />
+            {children}
+          </TooltipProvider>
         </LoaderProvider>
       </body>
     </html>

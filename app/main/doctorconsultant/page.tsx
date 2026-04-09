@@ -33,6 +33,7 @@ import { useLoader } from "@/hooks/use-loader"
 import {
   doctorConsultantSchema,
   exposeFormattedStringifyAPISchema,
+  exposeFormattedStringifyAPIResponseSchema,
 } from "@/lib/post-body-schema"
 import {
   Accordion,
@@ -57,8 +58,9 @@ export default function DoctorConsultantPage() {
       dob: new Date(new Date().setFullYear(new Date().getFullYear() - 18)),
       gender: "",
       mobile: "",
-      address: "",
-      currentIllness: "",
+      notes: "",
+      // address: "",
+      // currentIllness: "",
     },
     validators: {
       onSubmit: formSchema,
@@ -90,14 +92,9 @@ export default function DoctorConsultantPage() {
     },
   })
 
-  const formatSchema = useCallback(
-    () => exposeFormattedStringifyAPISchema(doctorConsultantSchema.shape),
-    []
-  )
-
   return (
     <div className="w-full">
-      <h2 className="text-2xl font-semibold">Add Doctor Consultant</h2>
+      <h2 className="text-2xl font-semibold">Book Doctor Consultant</h2>
 
       <Card className="mt-5 w-full max-w-[800px] py-1">
         <CardContent className="">
@@ -115,7 +112,15 @@ export default function DoctorConsultantPage() {
                   <div>
                     <h3 className="font-semibold">Request Body Schema</h3>
                     <pre className="overflow-x-auto rounded bg-[#aaaaaa] p-4 text-sm">
-                      {formatSchema()}
+                      {exposeFormattedStringifyAPISchema(
+                        doctorConsultantSchema.shape
+                      )}
+                    </pre>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">Response Body Schema</h3>
+                    <pre className="overflow-x-auto rounded bg-[#aaaaaa] p-4 text-sm">
+                      {exposeFormattedStringifyAPIResponseSchema()}
                     </pre>
                   </div>
                 </div>
@@ -288,6 +293,46 @@ export default function DoctorConsultantPage() {
                 }}
               />
               <form.Field
+                name="notes"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Field
+                      data-invalid={isInvalid}
+                      className="w-[calc(50%-0.5rem)] gap-0.5"
+                    >
+                      <FieldLabel htmlFor={field.name}>Notes</FieldLabel>
+                      <InputGroup>
+                        <InputGroupTextarea
+                          id={field.name}
+                          name={field.name}
+                          value={field.state.value}
+                          onBlur={field.handleBlur}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          placeholder="Enter notes"
+                          rows={6}
+                          className="min-h-24 resize-none"
+                          aria-invalid={isInvalid}
+                          maxLength={500}
+                        />
+                        <InputGroupAddon align="block-end">
+                          <InputGroupText className="tabular-nums">
+                            {field.state.value.length}/500 characters
+                          </InputGroupText>
+                        </InputGroupAddon>
+                      </InputGroup>
+                      {isInvalid && (
+                        <FieldError
+                          errors={field.state.meta.errors}
+                          className="text-xs"
+                        />
+                      )}
+                    </Field>
+                  )
+                }}
+              />
+              {/* <form.Field
                 name="address"
                 children={(field) => {
                   const isInvalid =
@@ -317,10 +362,6 @@ export default function DoctorConsultantPage() {
                           </InputGroupText>
                         </InputGroupAddon>
                       </InputGroup>
-                      {/* <FieldDescription>
-                        Include steps to reproduce, expected behavior, and what
-                        actually happened.
-                      </FieldDescription> */}
                       {isInvalid && (
                         <FieldError
                           errors={field.state.meta.errors}
@@ -363,10 +404,6 @@ export default function DoctorConsultantPage() {
                           </InputGroupText>
                         </InputGroupAddon>
                       </InputGroup>
-                      {/* <FieldDescription>
-                        Include steps to reproduce, expected behavior, and what
-                        actually happened.
-                      </FieldDescription> */}
                       {isInvalid && (
                         <FieldError
                           errors={field.state.meta.errors}
@@ -376,7 +413,7 @@ export default function DoctorConsultantPage() {
                     </Field>
                   )
                 }}
-              />
+              /> */}
             </FieldGroup>
           </form>
         </CardContent>

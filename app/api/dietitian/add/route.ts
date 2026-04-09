@@ -2,13 +2,10 @@ import { NextResponse } from "next/server"
 import { db } from "@/lib/firebase"
 import { collection, addDoc } from "firebase/firestore"
 import { z } from "zod"
-import {
-  medicalEvacuationSchema,
-  apiResponseSchema,
-} from "@/lib/post-body-schema"
+import { dietitianSchema, apiResponseSchema } from "@/lib/post-body-schema"
 import { rateLimitMiddleware } from "@/lib/rate-limit"
 
-const postBodySchema = medicalEvacuationSchema.extend({
+const postBodySchema = dietitianSchema.extend({
   dob: z.string(),
   createdAt: z.string(),
 })
@@ -39,10 +36,7 @@ export async function POST(
       }
       throw zodError
     }
-    const docRef = await addDoc(
-      collection(db, "medicalevacuations"),
-      validatedData
-    )
+    const docRef = await addDoc(collection(db, "dietitians"), validatedData)
     if (docRef.id) {
       return NextResponse.json({
         success: true,
@@ -55,7 +49,6 @@ export async function POST(
       { status: 500 }
     )
   } catch (error: any) {
-    console.log(error)
     return NextResponse.json(
       { success: false, message: error.message, data: null },
       { status: 500 }

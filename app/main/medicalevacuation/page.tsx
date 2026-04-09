@@ -34,6 +34,7 @@ import { useLoader } from "@/hooks/use-loader"
 import {
   medicalEvacuationSchema,
   exposeFormattedStringifyAPISchema,
+  exposeFormattedStringifyAPIResponseSchema,
 } from "@/lib/post-body-schema"
 import {
   Accordion,
@@ -176,14 +177,9 @@ export default function MultiSpecialistPage() {
     },
   })
 
-  const formatSchema = useCallback(
-    () => exposeFormattedStringifyAPISchema(medicalEvacuationSchema.shape),
-    []
-  )
-
   return (
     <div className="w-full">
-      <h2 className="text-2xl font-semibold">Add Multi Specialist</h2>
+      <h2 className="text-2xl font-semibold">Book Medical Evacuation</h2>
 
       <Card className="mt-5 w-full max-w-[800px] py-1">
         <CardContent className="">
@@ -201,7 +197,15 @@ export default function MultiSpecialistPage() {
                   <div>
                     <h3 className="font-semibold">Request Body Schema</h3>
                     <pre className="overflow-x-auto rounded bg-[#aaaaaa] p-4 text-sm">
-                      {formatSchema()}
+                      {exposeFormattedStringifyAPISchema(
+                        medicalEvacuationSchema.shape
+                      )}
+                    </pre>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">Response Body Schema</h3>
+                    <pre className="overflow-x-auto rounded bg-[#aaaaaa] p-4 text-sm">
+                      {exposeFormattedStringifyAPIResponseSchema()}
                     </pre>
                   </div>
                 </div>

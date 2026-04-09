@@ -1,27 +1,22 @@
 import { loader } from "@/hooks/use-loader"
 import { triggerToast } from "@/lib/utils"
+import { z } from "zod"
+import { apiResponseSchema } from "@/lib/post-body-schema"
 
 interface RequestConfig extends RequestInit {
   params?: Record<string, string>
-}
-
-interface HttpResponse<T> {
-  data: T | null
-  status: number
-  ok: boolean
-  error?: string
 }
 
 const BASE_URL = process.env.NEXT_API_BASE_URL ?? ""
 
 let activeRequests = 0
 
-async function httpRequest<T>(
+async function httpRequest(
   method: string,
   url: string,
   body?: unknown,
   config?: RequestConfig
-): Promise<HttpResponse<T>> {
+): Promise<z.infer<typeof apiResponseSchema>> {
   activeRequests++
   if (activeRequests === 1) {
     loader.show()
@@ -49,23 +44,26 @@ async function httpRequest<T>(
       ...init,
     })
 
-    const data = (await response.json().catch(() => null)) as T | null
+    const res = (await response.json().catch(() => null)) as z.infer<
+      typeof apiResponseSchema
+    >
 
     if (!response.ok) {
       const message =
-        ((data as Record<string, unknown>)?.message as string) ??
+        ((res as Record<string, unknown>)?.message as string) ??
         response.statusText ??
         "Something went wrong"
       triggerToast("error", message)
-      return { data: null, status: response.status, ok: false, error: message }
+      // return { data: null, status: response.status, ok: false, error: message }
+      return { data: null, success: false, message: message }
     }
 
-    return { data, status: response.status, ok: true }
+    return { data: res?.data, success: res?.success, message: res?.message }
   } catch (err) {
     const message =
       err instanceof Error ? err.message : "Network error. Please try again."
     triggerToast("error", message)
-    return { data: null, status: 0, ok: false, error: message }
+    return { data: null, success: false, message: message }
   } finally {
     activeRequests--
     if (activeRequests === 0) {
@@ -74,35 +72,35 @@ async function httpRequest<T>(
   }
 }
 
-function httpGet<T>(
+function httpGet(
   url: string,
   config?: RequestConfig
-): Promise<HttpResponse<T>> {
-  return httpRequest<T>("GET", url, undefined, config)
+): Promise<z.infer<typeof apiResponseSchema>> {
+  return httpRequest("GET", url, undefined, config)
 }
 
 function httpPost<T>(
   url: string,
   body?: unknown,
   config?: RequestConfig
-): Promise<HttpResponse<T>> {
-  return httpRequest<T>("POST", url, body, config)
+): Promise<z.infer<typeof apiResponseSchema>> {
+  return httpRequest("POST", url, body, config)
 }
 
 function httpPut<T>(
   url: string,
   body?: unknown,
   config?: RequestConfig
-): Promise<HttpResponse<T>> {
-  return httpRequest<T>("PUT", url, body, config)
+): Promise<z.infer<typeof apiResponseSchema>> {
+  return httpRequest("PUT", url, body, config)
 }
 
 function httpDelete<T>(
   url: string,
   config?: RequestConfig
-): Promise<HttpResponse<T>> {
-  return httpRequest<T>("DELETE", url, undefined, config)
+): Promise<z.infer<typeof apiResponseSchema>> {
+  return httpRequest("DELETE", url, undefined, config)
 }
 
 export { httpGet, httpPost, httpPut, httpDelete }
-export type { RequestConfig, HttpResponse }
+export type { RequestConfig }

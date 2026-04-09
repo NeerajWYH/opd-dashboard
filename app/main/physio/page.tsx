@@ -26,12 +26,13 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  SelectLabel,
 } from "@/components/ui/select"
 import { httpGet, httpPost } from "@/lib/https"
 import { triggerToast } from "@/lib/utils"
 import { useLoader } from "@/hooks/use-loader"
 import {
-  multiSpecialistSchema,
+  physioSchema,
   exposeFormattedStringifyAPISchema,
   exposeFormattedStringifyAPIResponseSchema,
 } from "@/lib/post-body-schema"
@@ -42,7 +43,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 
-const formSchema = multiSpecialistSchema
+const formSchema = physioSchema
 
 const items = [
   { label: "Male", value: "male" },
@@ -50,34 +51,107 @@ const items = [
   { label: "Other", value: "other" },
 ]
 
-const specialities = [
-  { label: "Anesthesiology", value: "Anesthesiology" },
-  { label: "Cardiology", value: "Cardiology" },
-  { label: "Dermatology", value: "Dermatology" },
-  { label: "Emergency Medicine", value: "EmergencyMedicine" },
-  { label: "Endocrinology", value: "Endocrinology" },
-  { label: "Family Medicine", value: "FamilyMedicine" },
-  { label: "Gastroenterology", value: "Gastroenterology" },
-  { label: "General Surgery", value: "GeneralSurgery" },
-  { label: "Geriatrics", value: "Geriatrics" },
-  { label: "Internal Medicine", value: "InternalMedicine" },
-  { label: "Nephrology", value: "Nephrology" },
-  { label: "Neurology", value: "Neurology" },
-  { label: "Obstetrics & Gynecology", value: "OBGYN" },
-  { label: "Oncology", value: "Oncology" },
-  { label: "Ophthalmology", value: "Ophthalmology" },
-  { label: "Orthopedic Surgery", value: "OrthopedicSurgery" },
-  { label: "Otolaryngology (ENT)", value: "ENT" },
-  { label: "Pediatrics", value: "Pediatrics" },
-  { label: "Psychiatry", value: "Psychiatry" },
-  { label: "Pulmonology", value: "Pulmonology" },
-  { label: "Radiology", value: "Radiology" },
-  { label: "Rheumatology", value: "Rheumatology" },
-  { label: "Urology", value: "Urology" },
-  { label: "Other", value: "Other" },
+const therapygoals = [
+  { label: "Pain Relief", value: "PAIN_RELIEF" },
+  { label: "Improve Mobility", value: "IMPROVE_MOBILITY" },
+  { label: "Post-Surgery Recovery", value: "POST_SURGERY_RECOVERY" },
+  { label: "Injury Rehabilitation", value: "INJURY_REHABILITATION" },
+  { label: "Posture Correction", value: "POSTURE_CORRECTION" },
+  { label: "Sports Recovery", value: "SPORTS_RECOVERY" },
 ]
 
-export default function MultiSpecialistPage() {
+const primaryconcerns = [
+  {
+    category: "Pain-Based",
+    types: [
+      { label: "Back Pain", value: "BACK_PAIN" },
+      { label: "Neck Pain", value: "NECK_PAIN" },
+      { label: "Shoulder Pain", value: "SHOULDER_PAIN" },
+      { label: "Knee Pain", value: "KNEE_PAIN" },
+      { label: "Hip Pain", value: "HIP_PAIN" },
+      { label: "Elbow Pain", value: "ELBOW_PAIN" },
+      { label: "Wrist Pain", value: "WRIST_PAIN" },
+      { label: "Ankle Pain", value: "ANKLE_PAIN" },
+      { label: "Heel Pain", value: "HEEL_PAIN" },
+      { label: "Foot Pain", value: "FOOT_PAIN" },
+    ],
+  },
+  {
+    category: "Injury-Related",
+    types: [
+      { label: "Sports Injury", value: "SPORTS_INJURY" },
+      { label: "Muscle Strain", value: "MUSCLE_STRAIN" },
+      { label: "Ligament Injury / Sprain", value: "LIGAMENT_INJURY" },
+      { label: "Tendon Injury", value: "TENDON_INJURY" },
+      { label: "Fracture Recovery", value: "FRACTURE_RECOVERY" },
+      { label: "Dislocation", value: "DISLOCATION" },
+      { label: "ACL Injury", value: "ACL_INJURY" },
+      { label: "Meniscus Injury", value: "MENISCUS_INJURY" },
+    ],
+  },
+  {
+    category: "Spine & Nerve",
+    types: [
+      { label: "Slip Disc", value: "SLIP_DISC" },
+      { label: "Sciatica", value: "SCIATICA" },
+      { label: "Spondylosis", value: "SPONDYLOSIS" },
+      { label: "Cervical Pain", value: "CERVICAL_PAIN" },
+      { label: "Nerve Compression", value: "NERVE_COMPRESSION" },
+    ],
+  },
+  {
+    category: "Joint & Bone",
+    types: [
+      { label: "Arthritis", value: "ARTHRITIS" },
+      { label: "Osteoarthritis", value: "OSTEOARTHRITIS" },
+      { label: "Rheumatoid Arthritis", value: "RHEUMATOID_ARTHRITIS" },
+      { label: "Frozen Shoulder", value: "FROZEN_SHOULDER" },
+      { label: "Tennis Elbow", value: "TENNIS_ELBOW" },
+      { label: "Plantar Fasciitis", value: "PLANTAR_FASCIITIS" },
+    ],
+  },
+  {
+    category: "Post-Surgery / Recovery",
+    types: [
+      { label: "Post-Surgery Rehabilitation", value: "POST_SURGERY_REHAB" },
+      { label: "Joint Replacement Recovery", value: "JOINT_REPLACEMENT" },
+      { label: "Spine Surgery Recovery", value: "SPINE_SURGERY_RECOVERY" },
+      { label: "Fracture Rehabilitation", value: "FRACTURE_REHAB" },
+    ],
+  },
+  {
+    category: "Mobility & Functional",
+    types: [
+      { label: "Difficulty Walking", value: "DIFFICULTY_WALKING" },
+      { label: "Difficulty Standing", value: "DIFFICULTY_STANDING" },
+      { label: "Difficulty Sitting", value: "DIFFICULTY_SITTING" },
+      { label: "Balance Issues", value: "BALANCE_ISSUES" },
+      { label: "Reduced Range of Motion", value: "REDUCED_ROM" },
+      { label: "Stiffness", value: "STIFFNESS" },
+    ],
+  },
+  {
+    category: "Lifestyle / Posture",
+    types: [
+      { label: "Posture Correction", value: "POSTURE_CORRECTION" },
+      { label: "Work-from-home Pain", value: "WFH_PAIN" },
+      { label: "Desk Job Pain", value: "DESK_JOB_PAIN" },
+      { label: "Repetitive Strain Injury", value: "RSI" },
+    ],
+  },
+  {
+    category: "Special Cases",
+    types: [
+      { label: "Pediatric Physiotherapy", value: "PEDIATRIC_PHYSIO" },
+      { label: "Geriatric Mobility Issues", value: "GERIATRIC_MOBILITY" },
+      { label: "Neurological Rehabilitation", value: "NEURO_REHAB" },
+    ],
+  },
+]
+
+const modprimaryconcerns = primaryconcerns.map((item) => item.types).flat()
+
+export default function DietitianPage() {
   const { toggleLoader } = useLoader()
   const form = useForm({
     defaultValues: {
@@ -85,18 +159,21 @@ export default function MultiSpecialistPage() {
       dob: new Date(new Date().setFullYear(new Date().getFullYear() - 18)),
       gender: "",
       mobile: "",
-      specialist: "",
+      // height: "",
+      // weight: "",
+      // therapygoal: "",
+      // primaryconcern: "",
+      // medicalhistory: "",
       notes: "",
-      // address: "",
-      // currentIllness: "",
     },
     validators: {
       onSubmit: formSchema,
     },
     onSubmit: async ({ value }) => {
+      console.log(value)
       try {
         toggleLoader(true)
-        const res = await httpPost("/api/multispecialist/add", {
+        const res = await httpPost("/api/physio/add", {
           ...value,
           dob: new Date(
             new Date(value.dob).getTime() + 5.5 * 60 * 60 * 1000
@@ -122,7 +199,7 @@ export default function MultiSpecialistPage() {
 
   return (
     <div className="w-full">
-      <h2 className="text-2xl font-semibold">Book Multi Specialist</h2>
+      <h2 className="text-2xl font-semibold">Book Physio Appointment</h2>
 
       <Card className="mt-5 w-full max-w-[800px] py-1">
         <CardContent className="">
@@ -134,15 +211,13 @@ export default function MultiSpecialistPage() {
                   <div>
                     <h3 className="mb-1 font-semibold">Endpoint</h3>
                     <code className="rounded bg-[#aaaaaa] px-2 py-1 text-sm">
-                      POST /api/multispecialist/add
+                      POST /api/physio/add
                     </code>
                   </div>
                   <div>
                     <h3 className="font-semibold">Request Body Schema</h3>
                     <pre className="overflow-x-auto rounded bg-[#aaaaaa] p-4 text-sm">
-                      {exposeFormattedStringifyAPISchema(
-                        multiSpecialistSchema.shape
-                      )}
+                      {exposeFormattedStringifyAPISchema(physioSchema.shape)}
                     </pre>
                   </div>
                   <div>
@@ -320,8 +395,8 @@ export default function MultiSpecialistPage() {
                   )
                 }}
               />
-              <form.Field
-                name="specialist"
+              {/* <form.Field
+                name="height"
                 children={(field) => {
                   const isInvalid =
                     field.state.meta.isTouched && !field.state.meta.isValid
@@ -330,9 +405,87 @@ export default function MultiSpecialistPage() {
                       data-invalid={isInvalid}
                       className="w-[calc(50%-0.5rem)] gap-0.5"
                     >
-                      <FieldLabel htmlFor={field.name}>Specialist</FieldLabel>
+                      <FieldLabel htmlFor={field.name}>Height (cm)</FieldLabel>
+                      <Input
+                        id={field.name}
+                        name={field.name}
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        aria-invalid={isInvalid}
+                        placeholder="Enter Height (cm)"
+                        autoComplete="off"
+                        maxLength={3}
+                        minLength={3}
+                        className="py-4.5"
+                        onKeyDown={(e) => {
+                          if (!/[0-9]/.test(e.key)) {
+                            e.preventDefault()
+                          }
+                        }}
+                      />
+                      {isInvalid && (
+                        <FieldError
+                          errors={field.state.meta.errors}
+                          className="text-xs"
+                        />
+                      )}
+                    </Field>
+                  )
+                }}
+              />
+              <form.Field
+                name="weight"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Field
+                      data-invalid={isInvalid}
+                      className="w-[calc(50%-0.5rem)] gap-0.5"
+                    >
+                      <FieldLabel htmlFor={field.name}>Weight (kg)</FieldLabel>
+                      <Input
+                        id={field.name}
+                        name={field.name}
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        aria-invalid={isInvalid}
+                        placeholder="Enter Weight (kg)"
+                        autoComplete="off"
+                        maxLength={3}
+                        minLength={2}
+                        className="py-4.5"
+                        onKeyDown={(e) => {
+                          if (!/[0-9]/.test(e.key)) {
+                            e.preventDefault()
+                          }
+                        }}
+                      />
+                      {isInvalid && (
+                        <FieldError
+                          errors={field.state.meta.errors}
+                          className="text-xs"
+                        />
+                      )}
+                    </Field>
+                  )
+                }}
+              />
+              <form.Field
+                name="therapygoal"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Field
+                      data-invalid={isInvalid}
+                      className="w-[calc(50%-0.5rem)] gap-0.5"
+                    >
+                      <FieldLabel htmlFor={field.name}>Therapy Goal</FieldLabel>
                       <Select
-                        items={specialities}
+                        items={therapygoals}
                         name={field.name}
                         value={field.state.value}
                         onValueChange={(val) => field.handleChange(val ?? "")}
@@ -341,11 +494,11 @@ export default function MultiSpecialistPage() {
                           className="w-[180px] py-4.5"
                           aria-invalid={isInvalid}
                         >
-                          <SelectValue placeholder="Select Specialist" />
+                          <SelectValue placeholder="Select Therapy Goal" />
                         </SelectTrigger>
                         <SelectContent alignItemWithTrigger={false}>
                           <SelectGroup>
-                            {specialities.map((item) => (
+                            {therapygoals.map((item) => (
                               <SelectItem key={item.value} value={item.value}>
                                 {item.label}
                               </SelectItem>
@@ -364,7 +517,7 @@ export default function MultiSpecialistPage() {
                 }}
               />
               <form.Field
-                name="notes"
+                name="primaryconcern"
                 children={(field) => {
                   const isInvalid =
                     field.state.meta.isTouched && !field.state.meta.isValid
@@ -373,66 +526,36 @@ export default function MultiSpecialistPage() {
                       data-invalid={isInvalid}
                       className="w-[calc(50%-0.5rem)] gap-0.5"
                     >
-                      <FieldLabel htmlFor={field.name}>Notes</FieldLabel>
-                      <InputGroup>
-                        <InputGroupTextarea
-                          id={field.name}
-                          name={field.name}
-                          value={field.state.value}
-                          onBlur={field.handleBlur}
-                          onChange={(e) => field.handleChange(e.target.value)}
-                          placeholder="Enter notes"
-                          rows={6}
-                          className="min-h-24 resize-none"
+                      <FieldLabel htmlFor={field.name}>
+                        Primary Concern
+                      </FieldLabel>
+                      <Select
+                        items={modprimaryconcerns}
+                        name={field.name}
+                        value={field.state.value}
+                        onValueChange={(val) => field.handleChange(val ?? "")}
+                      >
+                        <SelectTrigger
+                          className="w-[180px] py-4.5"
                           aria-invalid={isInvalid}
-                          maxLength={500}
-                        />
-                        <InputGroupAddon align="block-end">
-                          <InputGroupText className="tabular-nums">
-                            {field.state.value.length}/500 characters
-                          </InputGroupText>
-                        </InputGroupAddon>
-                      </InputGroup>
-                      {isInvalid && (
-                        <FieldError
-                          errors={field.state.meta.errors}
-                          className="text-xs"
-                        />
-                      )}
-                    </Field>
-                  )
-                }}
-              />
-              {/* <form.Field
-                name="address"
-                children={(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid
-                  return (
-                    <Field
-                      data-invalid={isInvalid}
-                      className="w-[calc(50%-0.5rem)] gap-0.5"
-                    >
-                      <FieldLabel htmlFor={field.name}>Address</FieldLabel>
-                      <InputGroup>
-                        <InputGroupTextarea
-                          id={field.name}
-                          name={field.name}
-                          value={field.state.value}
-                          onBlur={field.handleBlur}
-                          onChange={(e) => field.handleChange(e.target.value)}
-                          placeholder="Enter Your Address"
-                          rows={6}
-                          className="min-h-24 resize-none"
-                          aria-invalid={isInvalid}
-                          maxLength={200}
-                        />
-                        <InputGroupAddon align="block-end">
-                          <InputGroupText className="tabular-nums">
-                            {field.state.value.length}/200 characters
-                          </InputGroupText>
-                        </InputGroupAddon>
-                      </InputGroup>
+                        >
+                          <SelectValue placeholder="Select Primary Concern" />
+                        </SelectTrigger>
+                        <SelectContent alignItemWithTrigger={false}>
+                          {primaryconcerns.map((item) => (
+                            <SelectGroup key={item.category}>
+                              <SelectLabel className="rounded-sm bg-[#ccc] font-semibold text-black">
+                                {item.category}
+                              </SelectLabel>
+                              {item.types.map((item) => (
+                                <SelectItem key={item.value} value={item.value}>
+                                  {item.label}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       {isInvalid && (
                         <FieldError
                           errors={field.state.meta.errors}
@@ -444,7 +567,7 @@ export default function MultiSpecialistPage() {
                 }}
               />
               <form.Field
-                name="currentIllness"
+                name="medicalhistory"
                 children={(field) => {
                   const isInvalid =
                     field.state.meta.isTouched && !field.state.meta.isValid
@@ -454,7 +577,7 @@ export default function MultiSpecialistPage() {
                       className="w-[calc(50%-0.5rem)] gap-0.5"
                     >
                       <FieldLabel htmlFor={field.name}>
-                        Current Illness
+                        Medical History
                       </FieldLabel>
                       <InputGroup>
                         <InputGroupTextarea
@@ -463,7 +586,7 @@ export default function MultiSpecialistPage() {
                           value={field.state.value}
                           onBlur={field.handleBlur}
                           onChange={(e) => field.handleChange(e.target.value)}
-                          placeholder="Explain current illness"
+                          placeholder="Enter Your Notes"
                           rows={6}
                           className="min-h-24 resize-none"
                           aria-invalid={isInvalid}
@@ -485,6 +608,50 @@ export default function MultiSpecialistPage() {
                   )
                 }}
               /> */}
+              <form.Field
+                name="notes"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
+                  return (
+                    <Field
+                      data-invalid={isInvalid}
+                      className="w-[calc(50%-0.5rem)] gap-0.5"
+                    >
+                      <FieldLabel htmlFor={field.name}>Notes</FieldLabel>
+                      <InputGroup>
+                        <InputGroupTextarea
+                          id={field.name}
+                          name={field.name}
+                          value={field.state.value}
+                          onBlur={field.handleBlur}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          placeholder="Enter Your Notes"
+                          rows={6}
+                          className="min-h-24 resize-none"
+                          aria-invalid={isInvalid}
+                          maxLength={500}
+                        />
+                        <InputGroupAddon align="block-end">
+                          <InputGroupText className="tabular-nums">
+                            {field.state.value.length}/500 characters
+                          </InputGroupText>
+                        </InputGroupAddon>
+                      </InputGroup>
+                      {/* <FieldDescription>
+                        Include steps to reproduce, expected behavior, and what
+                        actually happened.
+                      </FieldDescription> */}
+                      {isInvalid && (
+                        <FieldError
+                          errors={field.state.meta.errors}
+                          className="text-xs"
+                        />
+                      )}
+                    </Field>
+                  )
+                }}
+              />
             </FieldGroup>
           </form>
         </CardContent>

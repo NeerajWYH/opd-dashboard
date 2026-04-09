@@ -13,9 +13,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
   SidebarProvider,
   SidebarRail,
   SidebarTrigger,
@@ -23,11 +20,16 @@ import {
 import {
   LayoutDashboard,
   Settings,
-  Users,
   TestTube2,
   StethoscopeIcon,
   Ambulance,
   Percent,
+  BrainCircuit,
+  Apple,
+  Dumbbell,
+  ReceiptText,
+  Wallet,
+  Landmark,
 } from "lucide-react"
 import { usePathname } from "next/navigation"
 
@@ -47,16 +49,46 @@ const navMain = [
     url: "/main/multispecialist",
     icon: StethoscopeIcon,
   },
+  // {
+  //   title: "Medical Evacuation",
+  //   url: "/main/medicalevacuation",
+  //   icon: Ambulance,
+  // },
+  // {
+  //   title: "AI Products",
+  //   url: "/main/aiproducts",
+  //   icon: BrainCircuit,
+  // },
   {
-    title: "Medical Evacuation",
-    url: "/main/medicalevacuation",
-    icon: Ambulance,
+    title: "Dietitian",
+    url: "/main/dietitian",
+    icon: Apple,
+  },
+  {
+    title: "Physio",
+    url: "/main/physio",
+    icon: Dumbbell,
   },
   {
     title: "Medicine Discounts",
     url: "/main/medicinediscounts",
     icon: Percent,
   },
+  {
+    title: "Gym Vouchers",
+    url: "/main/gymvouchers",
+    icon: ReceiptText,
+  },
+  // {
+  //   title: "Health Wallet",
+  //   url: "/main/healthwallet",
+  //   icon: Wallet,
+  // },
+  // {
+  //   title: "State Govt Apps",
+  //   url: "/main/stategovtapps",
+  //   icon: Landmark,
+  // },
 ]
 
 export default function MainLayout({

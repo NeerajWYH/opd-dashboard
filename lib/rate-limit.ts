@@ -1,5 +1,7 @@
 import rateLimit from "express-rate-limit"
 import { NextResponse } from "next/server"
+import { z } from "zod"
+import { apiResponseSchema } from "./post-body-schema"
 
 export const limiter = rateLimit({
   windowMs: 60 * 1000,
@@ -16,35 +18,43 @@ export const limiter = rateLimit({
   },
 })
 
-export async function rateLimitMiddleware(request: Request) {
-  return new Promise<NextResponse | null>((resolve) => {
-    const mockReq = {
-      headers: request.headers,
-    } as any
+export async function rateLimitMiddleware(
+  request?: Request
+): Promise<NextResponse<z.infer<typeof apiResponseSchema>> | null> {
+  return new Promise<NextResponse<z.infer<typeof apiResponseSchema>> | null>(
+    (resolve) => {
+      const mockReq = {
+        headers: request?.headers,
+      } as any
 
-    const mockRes = {
-      statusCode: 200,
-      setHeader: () => {},
-      end: () => {},
-    } as any
+      const mockRes = {
+        statusCode: 200,
+        setHeader: () => {},
+        end: () => {},
+      } as any
 
-    const originalEnd = mockRes.end
-    mockRes.end = function (body?: any) {
-      if (this.statusCode === 429) {
-        resolve(
-          NextResponse.json(
-            { error: "Too many requests. Please try again later." },
-            { status: 429 }
+      const originalEnd = mockRes.end
+      mockRes.end = function (body?: any) {
+        if (this.statusCode === 429) {
+          resolve(
+            NextResponse.json(
+              {
+                success: false,
+                message: "Too many requests. Please try again later.",
+                data: null,
+              },
+              { status: 429 }
+            )
           )
-        )
-      } else {
-        resolve(null)
+        } else {
+          resolve(null)
+        }
+        originalEnd.call(this, body)
       }
-      originalEnd.call(this, body)
-    }
 
-    limiter(mockReq, mockRes, () => {
-      resolve(null)
-    })
-  })
+      limiter(mockReq, mockRes, () => {
+        resolve(null)
+      })
+    }
+  )
 }
