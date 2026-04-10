@@ -40,23 +40,53 @@ export default function MedicineDiscountsPage() {
   const [openRedeemDialog, setOpenRedeemDialog] = useState<boolean>(false)
 
   useEffect(() => {
-    httpGet("/api/medicinediscounts/list", {
-      headers: {
-        "client-key": "DFKtkoqZiSLznGe9KENc",
+    setMedicineDiscounts([
+      {
+        couponcode: "WYHAPOLLOPHARMACY26",
+        logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFAXwZfrbhz8ycM4HLKWID-exuhpT048TXlg&s",
+        name: "Apollo Pharmacy",
+        redirectlink: "https://www.apollopharmacy.in/",
+        id: "0Jt9TcTZlRBiPJ8jzxtD",
       },
-    })
-      .then((res: z.infer<typeof apiResponseSchema>) => {
-        console.log(res)
-        if (res?.success) {
-          setMedicineDiscounts(res?.data || [])
-        } else triggerToast("error", res?.message)
-      })
-      .catch((err: z.infer<typeof apiResponseSchema>) => {
-        triggerToast(
-          "error",
-          err?.message || "Failed to fetch medicine discounts"
-        )
-      })
+      {
+        couponcode: "WYHTATA1MG26",
+        logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3_frXdMmVlusae6XK7iZulk2hKRzPhutc2aZtZUaOKNXyLCs8Z5Wi8Q0&s",
+        name: "Tata 1mg",
+        redirectlink: "https://www.1mg.com/",
+        id: "1zfvbZfNSed2mZQlu0e4",
+      },
+      {
+        couponcode: "WYHNETMEDS26",
+        logo: "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTnfcBQDUIUdv0qB5GXqS25OOfLcgB-0RvG6OE42N8-lNT2SRvI",
+        name: "Netmeds",
+        redirectlink: "https://www.netmeds.com/",
+        id: "St0njCkPUKUin8IgTubm",
+      },
+      {
+        couponcode: "WYHPHARMEASY26",
+        logo: "https://images.openai.com/static-rsc-4/bKCMi5o7F9yvVd5CCua_sHTyiNbmfxA2v1qm7ubOJZ3PMKfJukP6JjJqWuYB1wY6g0dja5ByIFi9g068t6A7HMCmCcqbQnfKTdHFtsyWuwrgqo2lWWnXi3ExVVD6KNRIF4q_W9qP3SP_POs0y6sToPyS5pgrcfh2bexgOyGDVSWGARsySZkOYxNocq7SwnBq?purpose=fullsize",
+        name: "PharmEasy",
+        redirectlink: "https://pharmeasy.in/",
+        id: "St0njCkPUKUin8IgTubm2",
+      },
+    ])
+    // httpGet("/api/medicinediscounts/list", {
+    //   headers: {
+    //     "client-key": "DFKtkoqZiSLznGe9KENc",
+    //   },
+    // })
+    //   .then((res: z.infer<typeof apiResponseSchema>) => {
+    //     console.log(res)
+    //     if (res?.success) {
+    //       setMedicineDiscounts(res?.data || [])
+    //     } else triggerToast("error", res?.message)
+    //   })
+    //   .catch((err: z.infer<typeof apiResponseSchema>) => {
+    //     triggerToast(
+    //       "error",
+    //       err?.message || "Failed to fetch medicine discounts"
+    //     )
+    //   })
   }, [])
 
   return (
