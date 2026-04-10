@@ -189,7 +189,7 @@ export default function BloodTestPage() {
                   <div>
                     <h3 className="mb-1 font-semibold">Endpoint</h3>
                     <code className="rounded bg-[#aaaaaa] px-2 py-1 text-sm">
-                      POST /api/bloodtest/add
+                      POST /api/gymvoucher/add
                     </code>
                   </div>
                   <div>
