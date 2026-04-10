@@ -154,6 +154,23 @@ export const physioSchema = z.object({
   notes: z.string().max(500, "Notes must be at most 500 characters."),
 })
 
+export const gymvoucherSchema = z.object({
+  fullname: z
+    .string()
+    .min(5, "Full name must be at least 5 characters.")
+    .max(50, "Full name must be at most 50 characters."),
+  dob: z.date(),
+  gender: z.string().min(1, "Gender is required"),
+  mobile: z
+    .string()
+    .refine(
+      (value) => /^[6-9]\d{9}$/.test(value),
+      "Mobile must be of 10 digits & should start with 6,7,8 or 9."
+    ),
+  gymname: z.string().min(1, "Gym is required"),
+  gymaddress: z.string(),
+})
+
 export function exposeFormattedStringifyAPISchema(schemaShape: any) {
   const refinedSchema = JSON.parse(JSON.stringify(schemaShape, null, 2))
   const updatedSchema: Record<string, string> = {}

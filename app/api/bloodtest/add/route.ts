@@ -18,6 +18,18 @@ export async function POST(
     return rateLimitResponse
   }
 
+  const clientKey = request.headers.get("client-key")
+  if (!clientKey) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Client key is required",
+        data: null,
+      },
+      { status: 400 }
+    )
+  }
+
   try {
     const body = await request.json()
     let validatedData: z.infer<typeof postBodySchema>

@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/firebase"
-import { collection, addDoc } from "firebase/firestore"
+import { collection, addDoc, getDoc, doc } from "firebase/firestore"
 import { z } from "zod"
-import { physioSchema, apiResponseSchema } from "@/lib/post-body-schema"
+import { gymvoucherSchema, apiResponseSchema } from "@/lib/post-body-schema"
 import { rateLimitMiddleware } from "@/lib/rate-limit"
 
-const postBodySchema = physioSchema.extend({
+const postBodySchema = gymvoucherSchema.extend({
   dob: z.string(),
   createdAt: z.string(),
 })
@@ -13,6 +13,7 @@ const postBodySchema = physioSchema.extend({
 export async function POST(
   request: Request
 ): Promise<NextResponse<z.infer<typeof apiResponseSchema>>> {
+  console.log("request", request)
   const rateLimitResponse = await rateLimitMiddleware(request)
   if (rateLimitResponse) {
     return rateLimitResponse
@@ -48,7 +49,26 @@ export async function POST(
       }
       throw zodError
     }
-    const docRef = await addDoc(collection(db, "physios"), validatedData)
+
+    const clientDocRef = await getDoc(doc(db, "clients", clientKey))
+    if (!clientDocRef.exists()) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Client not found",
+          data: null,
+        },
+        { status: 404 }
+      )
+    }
+
+    const clientData = clientDocRef.data()
+
+    const docRef = await addDoc(collection(db, "gymvouchers"), {
+      ...validatedData,
+      clientName: clientData?.name,
+      clientId: clientKey,
+    })
     if (docRef.id) {
       return NextResponse.json({
         success: true,
@@ -63,7 +83,7 @@ export async function POST(
   } catch (error: any) {
     console.log(error)
     return NextResponse.json(
-      { success: false, message: error.message, data: null },
+      { success: false, message: "Internal server error", data: null },
       { status: 500 }
     )
   }

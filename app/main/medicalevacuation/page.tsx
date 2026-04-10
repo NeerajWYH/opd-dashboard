@@ -162,7 +162,7 @@ export default function MultiSpecialistPage() {
             new Date().getTime() + 5.5 * 60 * 60 * 1000
           ).toISOString(),
         })
-        if (res.ok) {
+        if (res.success) {
           triggerToast("success", "Data submitted successfully")
           form.reset()
         } else {
@@ -362,7 +362,12 @@ export default function MultiSpecialistPage() {
                         minLength={10}
                         className="py-4.5"
                         onKeyDown={(e) => {
-                          if (!/[0-9]/.test(e.key)) {
+                          if (
+                            !/[0-9]/.test(e.key) &&
+                            e.key !== "Backspace" &&
+                            e.key !== "ArrowLeft" &&
+                            e.key !== "ArrowRight"
+                          ) {
                             e.preventDefault()
                           }
                         }}

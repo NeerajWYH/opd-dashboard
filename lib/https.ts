@@ -37,6 +37,12 @@ async function httpRequest(
       ...(customHeaders as Record<string, string>),
     }
 
+    // console.log(headers, !headers["client-key"])
+
+    if (!headers["client-key"]) {
+      return { data: null, success: false, message: "Client keys is required" }
+    }
+
     const response = await fetch(fullUrl, {
       method,
       headers,
