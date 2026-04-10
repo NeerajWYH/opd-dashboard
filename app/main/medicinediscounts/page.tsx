@@ -62,7 +62,7 @@ export default function MedicineDiscountsPage() {
   return (
     <>
       <div className="w-full">
-        <h2 className="text-2xl font-semibold">AI Products</h2>
+        <h2 className="text-2xl font-semibold">Medicine Discounts</h2>
 
         <Card className="mt-5 w-full max-w-[800px] p-0">
           <CardContent className="flex flex-row flex-wrap gap-6 p-6">
