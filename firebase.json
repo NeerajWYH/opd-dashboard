@@ -1,0 +1,6 @@
+{
+  "hosting": {
+    "source": "./.next/standalone",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+  }
+}

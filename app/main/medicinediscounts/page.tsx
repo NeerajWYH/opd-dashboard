@@ -40,7 +40,11 @@ export default function MedicineDiscountsPage() {
   const [openRedeemDialog, setOpenRedeemDialog] = useState<boolean>(false)
 
   useEffect(() => {
-    httpGet("/api/medicinediscounts/list")
+    httpGet("/api/medicinediscounts/list", {
+      headers: {
+        "client-key": "DFKtkoqZiSLznGe9KENc",
+      },
+    })
       .then((res: z.infer<typeof apiResponseSchema>) => {
         console.log(res)
         if (res?.success) {
